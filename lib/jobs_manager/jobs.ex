@@ -4,6 +4,7 @@ defmodule JobsManager.Jobs do
   """
 
   import Ecto.Query, warn: false
+  import Geo.PostGIS
   alias JobsManager.Repo
 
   alias JobsManager.Jobs.ContractType
@@ -388,5 +389,26 @@ defmodule JobsManager.Jobs do
   """
   def change_job_offer(%JobOffer{} = job_offer) do
     JobOffer.changeset(job_offer, %{})
+  end
+
+  alias JobsManager.Jobs.Continent
+
+  def create_continent(attrs \\ %{}) do
+    %Continent{}
+    |> Continent.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_continents_by_coordinates() do
+    from(c in Continent,
+      join: j in JobOffer,
+      where: st_contains(c.coordinates, j.coordinate),
+      group_by: c.id,
+      select: %{
+        name: c.name,
+        count: count(j.id)
+      }
+    )
+    |> Repo.all()
   end
 end
