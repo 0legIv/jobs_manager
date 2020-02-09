@@ -45,12 +45,16 @@ professions =
 
 africa_coordinates = "priv/africa.json" |> File.read!() |> Jason.decode!() |> Geo.JSON.decode!()
 
-IO.inspect(africa_coordinates)
 Jobs.create_continent(%{name: "Africa", coordinates: africa_coordinates})
 
 asia_coordinates = "priv/asia.json" |> File.read!() |> Jason.decode!() |> Geo.JSON.decode!()
 
 Jobs.create_continent(%{name: "Asia", coordinates: asia_coordinates})
+
+australia_coordinates =
+  "priv/australia.json" |> File.read!() |> Jason.decode!() |> Geo.JSON.decode!()
+
+Jobs.create_continent(%{name: "Australia", coordinates: australia_coordinates})
 
 europe_coordinates = "priv/europe.json" |> File.read!() |> Jason.decode!() |> Geo.JSON.decode!()
 

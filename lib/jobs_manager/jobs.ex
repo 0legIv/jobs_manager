@@ -399,16 +399,70 @@ defmodule JobsManager.Jobs do
     |> Repo.insert()
   end
 
-  def get_continents_by_coordinates() do
+  def get_continent_id_by_coordinate(point) do
     from(c in Continent,
-      join: j in JobOffer,
-      where: st_contains(c.coordinates, j.coordinate),
-      group_by: c.id,
+      where: st_contains(c.coordinates, ^point),
+      select: c.id
+    )
+    |> Repo.one()
+  end
+
+  def get_job_offers_in_radius(lat, lon, radius) do
+    point = %Geo.Point{coordinates: {lon, lat}, srid: 4326}
+    radius = radius * 1000
+
+    from(j in JobOffer,
+      where: st_dwithin_in_meters(j.coordinate, ^point, ^radius)
+    )
+    |> Repo.all()
+  end
+
+  def all_job_offers_to_geojson() do
+    job_offers = list_job_offers()
+
+    features =
+      Enum.map(job_offers, fn offer ->
+        %{
+          type: "Feature",
+          properties: %{},
+          geometry: %{
+            type: "Point",
+            coordinates: [
+              elem(offer.coordinate.coordinates, 0),
+              elem(offer.coordinate.coordinates, 1)
+            ]
+          }
+        }
+      end)
+
+    json =
+      %{
+        type: "FeatureCollection",
+        features: features
+      }
+      |> Jason.encode!()
+
+    File.write("job_offers.json", json)
+  end
+
+  def count_job_offers_by_profession_continent() do
+    from(j in JobOffer,
+      join: c in Continent,
+      on: j.continent_id == c.id,
+      join: p in Profession,
+      on: j.profession_id == p.id,
+      group_by: [p.id, c.id],
       select: %{
-        name: c.name,
-        count: count(j.id)
+        p.name => %{
+          c.name => count(j.id)
+        }
       }
     )
     |> Repo.all()
+    |> Enum.reduce(%{}, fn job_offers, acc ->
+      Map.merge(acc, job_offers, fn _k, v1, v2 ->
+        Map.merge(v1, v2)
+      end)
+    end)
   end
 end

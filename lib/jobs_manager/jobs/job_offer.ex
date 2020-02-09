@@ -1,6 +1,7 @@
 defmodule JobsManager.Jobs.JobOffer do
   use Ecto.Schema
   import Ecto.Changeset
+  alias JobsManager.Jobs
   alias JobsManager.Jobs.Profession
   alias JobsManager.Jobs.ContractType
   alias JobsManager.Jobs.Continent
@@ -19,6 +20,13 @@ defmodule JobsManager.Jobs.JobOffer do
   def changeset(job_offer, attrs) do
     job_offer
     |> cast(attrs, [:name, :profession_id, :contract_type_id, :coordinate, :continent_id])
+    |> prepare_changes(fn changeset ->
+      continent_id =
+        changeset.changes.coordinate
+        |> Jobs.get_continent_id_by_coordinate()
+
+      put_change(changeset, :continent_id, continent_id)
+    end)
     |> validate_required([
       :name,
       :profession_id,
