@@ -5,7 +5,7 @@ config :jobs_manager, JobsManager.Repo,
   username: "postgres",
   password: "postgres",
   database: "jobs_manager_dev",
-  hostname: "localhost",
+  hostname: System.get_env("POSTGRES_HOST") || "localhost",
   types: JobsManager.PostgresTypes,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

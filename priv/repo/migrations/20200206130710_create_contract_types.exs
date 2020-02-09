@@ -7,6 +7,5 @@ defmodule JobsManager.Repo.Migrations.CreateContractTypes do
 
       timestamps()
     end
-
   end
 end

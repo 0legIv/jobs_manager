@@ -40,13 +40,19 @@ defmodule JobsManager.JobsTest do
 
     test "update_contract_type/2 with valid data updates the contract_type" do
       contract_type = contract_type_fixture()
-      assert {:ok, %ContractType{} = contract_type} = Jobs.update_contract_type(contract_type, @update_attrs)
+
+      assert {:ok, %ContractType{} = contract_type} =
+               Jobs.update_contract_type(contract_type, @update_attrs)
+
       assert contract_type.name == "some updated name"
     end
 
     test "update_contract_type/2 with invalid data returns error changeset" do
       contract_type = contract_type_fixture()
-      assert {:error, %Ecto.Changeset{}} = Jobs.update_contract_type(contract_type, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Jobs.update_contract_type(contract_type, @invalid_attrs)
+
       assert contract_type == Jobs.get_contract_type!(contract_type.id)
     end
 

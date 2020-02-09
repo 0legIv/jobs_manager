@@ -1,0 +1,19 @@
+version: "3"
+services:
+  postgres:
+    image: "mdillon/postgis"
+    environment: 
+      - POSTGRES_USER=postgres 
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+  jobs_manager:
+    image: "jobs_manager:latest"
+    environment: 
+      - POSTGRES_HOST=postgres
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+
+  

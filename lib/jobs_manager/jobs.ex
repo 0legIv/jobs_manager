@@ -7,6 +7,7 @@ defmodule JobsManager.Jobs do
   import Geo.PostGIS
   alias JobsManager.Repo
 
+  alias JobsManager.DistanceHelpers
   alias JobsManager.Jobs.ContractType
 
   @doc """
@@ -409,10 +410,18 @@ defmodule JobsManager.Jobs do
 
   def get_job_offers_in_radius(lat, lon, radius) do
     point = %Geo.Point{coordinates: {lon, lat}, srid: 4326}
-    radius = radius * 1000
+    radius = DistanceHelpers.km_to_m(radius)
 
     from(j in JobOffer,
-      where: st_dwithin_in_meters(j.coordinate, ^point, ^radius)
+      join: c in Continent,
+      on: j.continent_id == c.id,
+      where: st_dwithin_in_meters(j.coordinate, ^point, ^radius),
+      preload: [:profession, :contract_type],
+      select: %{
+        job_offer: j,
+        proximity: st_distance_in_meters(j.coordinate, ^point),
+        continent: c.name
+      }
     )
     |> Repo.all()
   end

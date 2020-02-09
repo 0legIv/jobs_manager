@@ -1,23 +1,23 @@
 # JobsManager
 
-To start your Phoenix server:
+## To start the application: 
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Start Phoenix endpoint with `mix phx.server`
+- `docker build -t jobs_manager .`
+- `docker-compose up`
+- wait a little bit for the database initialization after that you can start testing
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## If you want to start in interactive elixir:
+- `docker run -it -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres mdillon/postgis`
+- `mix ecto.reset` (to init the database if you run it for the first time)
+- `iex -S mix phx.server`
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Endpoints
 
-## Learn more
+Port for the application is 4000
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+`GET` request
 
-Run postgis: 
+- `localhost:4000/api/job_offers/count` - returns the count of job offers per profession category per continent.
 
-docker run -it -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres mdillon/postgis
+- `localhost:4000/api/job_offers/radius?lat=40.7805&lon=-2.6147&radius=100` - returns the job offers with the proximity to these offers around a given location and a given radius around this location. Values that are set for arguments - `lat`, `lon`, `radius` are just for example.
+
