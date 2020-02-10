@@ -8,6 +8,7 @@
 
 ## If you want to start in interactive elixir:
 - `docker run -it -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres mdillon/postgis`
+- `mix deps.get`
 - `mix ecto.reset` (to init the database if you run it for the first time)
 - `iex -S mix phx.server`
 
@@ -24,6 +25,7 @@ Port for the application is 4000
 ## To run the tests
 
 - `docker run -it -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres mdillon/postgis`
+- `mix deps.get`
 - `MIX_ENV=test mix ecto.create`
 - `MIX_ENV=test mix ecto.migrate`
 - `mix test`
