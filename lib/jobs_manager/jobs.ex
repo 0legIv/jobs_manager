@@ -400,6 +400,9 @@ defmodule JobsManager.Jobs do
     |> Repo.insert()
   end
 
+  @doc """
+    Calculates if point is inside one of the continents polygon and returns continents id
+  """
   def get_continent_id_by_coordinate(point) do
     from(c in Continent,
       where: st_contains(c.coordinates, ^point),
@@ -408,6 +411,13 @@ defmodule JobsManager.Jobs do
     |> Repo.one()
   end
 
+  @doc """
+    Gets all job offers that are inside circle with given radius.
+
+    2 PostGIS functions are used: 
+      st_dwithin - to get points in radius
+      st_distance - to calculate the proximity
+  """
   def get_job_offers_in_radius(lat, lon, radius) do
     point = %Geo.Point{coordinates: {lon, lat}, srid: 4326}
     radius = DistanceHelpers.km_to_m(radius)
@@ -426,6 +436,17 @@ defmodule JobsManager.Jobs do
     |> Repo.all()
   end
 
+  @doc """
+    Save all the job offers as points in geojson. 
+    These points can be used to check work 
+    of functions: 
+      get_job_offers_in_radius(lat, lon, radius)
+      count_job_offers_by_profession_continent()
+
+    To load points on the map can be used such services:
+      http://geojson.io/
+      Qgis
+  """
   def all_job_offers_to_geojson() do
     job_offers = list_job_offers()
 
@@ -454,6 +475,10 @@ defmodule JobsManager.Jobs do
     File.write("job_offers.json", json)
   end
 
+  @doc """
+    Calculates the count of job_offers grouped by 
+    profession and continent
+  """
   def count_job_offers_by_profession_continent() do
     from(j in JobOffer,
       join: c in Continent,
